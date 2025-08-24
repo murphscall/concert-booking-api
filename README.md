@@ -58,6 +58,10 @@
 
 - 실제 돈이 오가는 PG 연동은 하지 않는다. 예매 요청이 성공하면 결제도 성공했다고 가정하고 진행한다.
 - 관리자 콘서트 등록 기능은 만들지 않는다. (테스트 데이터는 DB에 직접 입력한다.)
+- 콘서트는 단일 공연장에서만 진행한다.
+- 콘서트는 하루동안만 진행된다.
+
+
 
 
 
@@ -68,7 +72,7 @@
 
 
 | Method  | API                             | 기능               |
-| ------- | ------------------------------- | ---------------- |
+|---------|---------------------------------|------------------|
 | `POST`  | /api/users                      | 회원 가입            |
 | `GET`   | /api/users/me                   | 회원 정보            |
 | `PATCH` | /api/users/me                   | 회원 정보 수정         |
@@ -88,42 +92,49 @@
 #### USERS
 
 | 컬럼명         | 데이터타입        | 제약 조건 및 설정                   |
-| ----------- | ------------ | ---------------------------- |
+|-------------|--------------|------------------------------|
 | id **(PK)** | BIGINT       | PRIMARY KEY , AUTO INCREMENT |
 | email       | VARCHAR(255) | NOT NULL , UNIQUE            |
 | password    | VARCHAR(255) | NOT NULL                     |
 | nickname    | VARCHAR(50)  | NOT NULL                     |
 | created_at  | DATETIME     | NOT NULL                     |
-
+| updated_at  | DATETIME     | NOT NULL                     |
 
 
 #### CONCERTS
 
-| 컬럼명          | 데이터타입        | 제약 조건 및 설정                   |
-| ------------ | ------------ | ---------------------------- |
-| id **(PK)**  | BIGINT       | PRIMARY KEY , AUTO INCREMENT |
-| name         | VARCHAR(255) | NOT NULL                     |
-| concert_date | DATETIME     | NOT NULL                     |
+| 컬럼명           | 데이터타입        | 제약 조건 및 설정                   |
+|---------------|--------------|------------------------------|
+| id **(PK)**   | BIGINT       | PRIMARY KEY , AUTO INCREMENT |
+| name          | VARCHAR(255) | NOT NULL                     |
+| ticket_limit  | BIGINT       | NOT NULL                     |
+| concert_venue | VARCHAR(255) | NOT NULL                     |
+| concert_date  | DATETIME     | NOT NULL                     |
+| created_at    | DATETIME     | NOT NULL                     |
+| updated_at    | DATETIME     | NOT NULL                     |
 
+#### TICKETS
 
-#### SEATS
-
-| 컬럼명                 | 데이터타입         | 제약 조건 및 설정                         |
-| ------------------- | ------------- | ---------------------------------- |
-| id **(PK)**         | BIGINT        | PRIMARY KEY , AUTO INCREMENT       |
-| seat_number         | VARCHAR(20)   | NOT NULL (e.g "A1", "R25")         |
-| status              | VARCHAR       | NOT NULL ( `AVAILABLE` , `BOOKED`) |
-| price               | DECIMAL(10,2) | NOT NULL                           |
-| concert_id **(FK)** | BIGINT        | NOT NULL , FOREIGN KEY             |
+| 컬럼명                 | 데이터타입          | 제약 조건 및 설정                         |
+|---------------------|----------------|------------------------------------|
+| id **(PK)**         | BIGINT         | PRIMARY KEY , AUTO INCREMENT       |
+| seat_number         | VARCHAR(20)    | NOT NULL                           |
+| status              | VARCHAR        | NOT NULL ( `AVAILABLE` , `BOOKED`) |
+| grade               | VARCHAHR(10)   | NOT NULL                           |
+| price               | DECIMAL(10,2)  | NOT NULL                           |
+| created_at          | DATETIME       | NOT NULL                           |
+| updated_at          | DATETIME       | NOT NULL                           |
+| concert_id **(FK)** | BIGINT         | NOT NULL , FOREIGN KEY             |
 
 #### BOOKINGS
 
-| 컬럼명              | 데이터타입    | 제약 조건 및 설정                       |
-| ---------------- | -------- | -------------------------------- |
-| id **(PK)**      | BIGINT   | PRIMARY KEY , AUTO INCREMENT     |
-| booked_at        | DATETIME | NOT NULL                         |
-| seat_id **(FK)** | BIGINT   | NOT NULL , FOREIGN KEY , UINIQUE |
-| user_id **(FK)** | BIGINT   | NOT NULL , FOREIGN KEY           |
+| 컬럼명                | 데이터 타입   | 제약 조건 및 설정                   |
+|--------------------|----------|------------------------------|
+| id **(PK)**        | BIGINT   | PRIMARY KEY , AUTO INCREMENT |
+| created_at         | DATETIME | NOT NULL                     |
+| updated_at         | DATETIME | NOT NULL                     |
+| ticket_id **(FK)** | BIGINT   | NOT NULL , FOREIGN KEY       |
+| user_id **(FK)**   | BIGINT   | NOT NULL , FOREIGN KEY       |
 
 
 
