@@ -2,12 +2,14 @@ package io.github.murphscall.concertbooking.user.domain;
 
 import io.github.murphscall.concertbooking.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+@Getter
 @Table(name = "users")
 @Entity
 public class User extends BaseEntity {
@@ -23,6 +25,7 @@ public class User extends BaseEntity {
     @Column(name = "email" , nullable = false , unique = true)
     private String email;
 
+    @Getter(AccessLevel.PROTECTED)
     @Column(name = "password" , nullable = false)
     private String password;
 
