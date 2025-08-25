@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class UserMapper implements ModelMapper<UserRequest, UserResponse, User> {
+public class UserMapper implements UserModelMapper{
+
     @Override
     public UserResponse toDto(final User user) {
         return new UserResponse(
