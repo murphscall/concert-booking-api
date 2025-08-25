@@ -7,10 +7,7 @@ import io.github.murphscall.concertbooking.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -24,8 +21,22 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> userInfo(){
+
+        UserResponse userResponse = userService.getUserInfo();
+        return null;
+    }
+
+    @PatchMapping
+    public ResponseEntity<Void> userUpdate(@RequestBody @Valid UserRequest userRequest) {
+
+
+        return null;
+    }
+
     @PostMapping
-    public ResponseEntity<ApiResponse<UserResponse>> registerRequest(@Valid @RequestBody final UserRequest request) {
+    public ResponseEntity<ApiResponse<UserResponse>> userRegister(@Valid @RequestBody final UserRequest request) {
 
         UserResponse userResponse = userService.register(request);
 

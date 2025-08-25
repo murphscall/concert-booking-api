@@ -18,7 +18,4 @@ public class UserResponse {
     private String nickname;
     private LocalDateTime createdAt;
 
-
-
-
 }

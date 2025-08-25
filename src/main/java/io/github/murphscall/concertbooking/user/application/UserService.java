@@ -1,29 +1,39 @@
 package io.github.murphscall.concertbooking.user.application;
 
+import io.github.murphscall.concertbooking.global.mapper.ModelMapper;
 import io.github.murphscall.concertbooking.user.domain.User;
 import io.github.murphscall.concertbooking.user.domain.UserRepository;
 import io.github.murphscall.concertbooking.user.dto.UserRequest;
 import io.github.murphscall.concertbooking.user.dto.UserResponse;
-import io.github.murphscall.concertbooking.user.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
-    private final UserMapper userMapper;
+    private final ModelMapper<UserRequest,UserResponse,User> modelMapper;
     private final UserRepository userRepository;
 
-    public UserService(final UserRepository userRepository , final UserMapper userMapper) {
+    public UserService(final UserRepository userRepository , final ModelMapper modelMapper) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
+        this.modelMapper = modelMapper;
+    }
+
+    public UserResponse getUserInfo() {
+        return null;
+    }
+
+    public UserResponse update(final UserRequest userRequest) {
+        return null;
     }
 
     public UserResponse register(final UserRequest userRequest) {
 
-        User user = userMapper.toEntity(userRequest);
+        User user = modelMapper.toEntity(userRequest);
 
         userRepository.save(user);
 
-        return userMapper.toDto(user);
+        return modelMapper.toDto(user);
     }
+
+
 }
