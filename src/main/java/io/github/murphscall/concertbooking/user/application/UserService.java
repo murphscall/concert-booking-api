@@ -3,6 +3,7 @@ package io.github.murphscall.concertbooking.user.application;
 
 import io.github.murphscall.concertbooking.user.domain.User;
 import io.github.murphscall.concertbooking.user.domain.UserRepository;
+import io.github.murphscall.concertbooking.user.domain.UserRole;
 import io.github.murphscall.concertbooking.user.dto.UserRequest;
 import io.github.murphscall.concertbooking.user.dto.UserResponse;
 import io.github.murphscall.concertbooking.user.mapper.UserModelMapper;
@@ -37,7 +38,8 @@ public class UserService {
         User user = new User(
                 userRequest.getEmail(),
                 encodedPassword,
-                userRequest.getNickname()
+                userRequest.getNickname(),
+                UserRole.USER
         );
 
         userRepository.save(user);
