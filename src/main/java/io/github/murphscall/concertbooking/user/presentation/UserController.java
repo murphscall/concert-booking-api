@@ -24,9 +24,10 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> userInfo(@AuthenticationPrincipal AuthUser authUser){
-        UserResponse userResponse = userService.getUserInfo();
-        return null;
+    public ResponseEntity<ApiResponse<UserResponse>> userInfo(@AuthenticationPrincipal AuthUser authUser){
+        UserResponse userResponse = userService.getUserInfo(authUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(userResponse,null,HttpStatus.OK));
     }
 
     @PatchMapping

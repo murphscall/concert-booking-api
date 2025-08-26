@@ -6,9 +6,12 @@ import io.github.murphscall.concertbooking.user.domain.UserRepository;
 import io.github.murphscall.concertbooking.user.domain.UserRole;
 import io.github.murphscall.concertbooking.user.dto.UserRequest;
 import io.github.murphscall.concertbooking.user.dto.UserResponse;
+import io.github.murphscall.concertbooking.user.exception.NoSuchUserException;
 import io.github.murphscall.concertbooking.user.mapper.UserModelMapper;
 import io.github.murphscall.concertbooking.utils.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -23,11 +26,16 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserResponse getUserInfo() {
-        return null;
+    public UserResponse getUserInfo(final Long userId) {
+
+        return userRepository
+                .findById(userId)
+                .map(user -> userModelMapper.toDto(user))
+                .orElseThrow(() -> new NoSuchUserException("존재 하지 않는 유저 입니다."));
+
     }
 
-    public UserResponse update(final UserRequest userRequest) {
+    public UserResponse update(final UserRequest userRequest , final Long userId) {
         return null;
     }
 
