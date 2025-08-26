@@ -1,5 +1,6 @@
 package io.github.murphscall.concertbooking.global.error;
 
+import io.github.murphscall.concertbooking.auth.exception.LoginFailedException;
 import io.github.murphscall.concertbooking.global.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(ApiResponse.error(errors , "error" , HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(LoginFailedException.class)
+    public ResponseEntity<ApiResponse> handleLoginFailedException(final LoginFailedException ex){
+
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(ApiResponse.error(null,ex.getMessage(),HttpStatus.UNAUTHORIZED));
+
     }
 
 }

@@ -1,5 +1,7 @@
 package io.github.murphscall.concertbooking.user.presentation;
 
+import io.github.murphscall.concertbooking.auth.dto.AuthUser;
+import io.github.murphscall.concertbooking.auth.presentation.AuthenticationPrincipal;
 import io.github.murphscall.concertbooking.global.dto.ApiResponse;
 import io.github.murphscall.concertbooking.user.application.UserService;
 import io.github.murphscall.concertbooking.user.dto.UserRequest;
@@ -22,8 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> userInfo(){
-
+    public ResponseEntity<UserResponse> userInfo(@AuthenticationPrincipal AuthUser authUser){
         UserResponse userResponse = userService.getUserInfo();
         return null;
     }
