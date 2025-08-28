@@ -8,6 +8,7 @@ package io.github.murphscall.concertbooking.global.mapper;
  * @param <E> Entity
  */
 public interface ModelMapper<REQ, RES, E> {
-    RES toDto(final E entity);
-    E toEntity(final REQ dto);
+	RES toDto(final E entity);
+
+	E toEntity(final REQ dto);
 }

@@ -6,12 +6,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class PasswordEncoder {
 
-    public String encode(String password){
-        return BCrypt.hashpw(password , BCrypt.gensalt());
-    }
+	public String encode(final String password) {
+		return BCrypt.hashpw(password, BCrypt.gensalt());
+	}
 
-    public boolean matches(String rawPassword, String encodedPassword){
-        return BCrypt.checkpw(rawPassword , encodedPassword);
-    }
+	public boolean matches(final String rawPassword, final String encodedPassword) {
+		return BCrypt.checkpw(rawPassword, encodedPassword);
+	}
 
 }

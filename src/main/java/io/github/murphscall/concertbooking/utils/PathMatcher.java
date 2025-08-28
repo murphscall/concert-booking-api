@@ -15,8 +15,7 @@ public class PathMatcher {
 		new PermitRequest("/api/concerts", HttpMethod.GET)
 	);
 
-
-	public boolean isPermitted(String path, HttpMethod method) {
+	public boolean isPermitted(final String path, final HttpMethod method) {
 		return PERMIT_REQUESTS.stream()
 			.anyMatch(permitRequest -> permitRequest.matches(path, method));
 	}
@@ -24,7 +23,7 @@ public class PathMatcher {
 	private record PermitRequest(String path, HttpMethod method) {
 
 		public boolean matches(String path, HttpMethod method) {
-				return this.path.equals(path) && this.method.equals(method);
-			}
+			return this.path.equals(path) && this.method.equals(method);
+		}
 	}
 }

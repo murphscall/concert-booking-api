@@ -5,7 +5,7 @@ public class NoSuchUserException extends RuntimeException {
 		super(message);
 	}
 
-	public NoSuchUserException(){
+	public NoSuchUserException() {
 		this("존재하지 않는 회원입니다.");
 	}
 }

@@ -6,12 +6,11 @@ import lombok.Getter;
 public class AuthUser {
 	private Long id;
 
-	private AuthUser(){
+	private AuthUser() {
 	}
 
-	public AuthUser(Long id){
+	public AuthUser(Long id) {
 		this.id = id;
 	}
-
 
 }

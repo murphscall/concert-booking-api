@@ -11,7 +11,7 @@ public class CookieUtil {
 	@Value("${jwt.expiration.time}")
 	private long expiration;
 
-	public Cookie createCookie(String token) {
+	public Cookie createCookie(final String token) {
 		Cookie cookie = new Cookie("accessToken", token);
 		cookie.setHttpOnly(true);
 		cookie.setPath("/");

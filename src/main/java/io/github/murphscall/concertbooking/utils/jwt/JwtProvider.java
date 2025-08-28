@@ -36,7 +36,7 @@ public class JwtProvider {
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
 
-	public String createToken(Long userId, UserRole role) {
+	public String createToken(final Long userId, final UserRole role) {
 
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + expiration);
@@ -67,7 +67,7 @@ public class JwtProvider {
 			.findFirst();
 	}
 
-	public boolean validateToken(String token) {
+	public boolean validateToken(final String token) {
 		try {
 			JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
 			Jws<Claims> claims = jwtParser.parseClaimsJws(token);
@@ -79,7 +79,7 @@ public class JwtProvider {
 		}
 	}
 
-	public Long getUserIdFromToken(String token) {
+	public Long getUserIdFromToken(final String token) {
 		return Long.parseLong(
 			Jwts.parser()
 				.setSigningKey(secretKey)

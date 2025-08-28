@@ -1,58 +1,71 @@
 package io.github.murphscall.concertbooking.user.application;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.murphscall.concertbooking.user.domain.User;
 import io.github.murphscall.concertbooking.user.domain.UserRepository;
 import io.github.murphscall.concertbooking.user.domain.UserRole;
 import io.github.murphscall.concertbooking.user.dto.UserRequest;
 import io.github.murphscall.concertbooking.user.dto.UserResponse;
+import io.github.murphscall.concertbooking.user.dto.UserUpdateRequest;
 import io.github.murphscall.concertbooking.user.exception.NoSuchUserException;
 import io.github.murphscall.concertbooking.user.mapper.UserModelMapper;
 import io.github.murphscall.concertbooking.utils.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserService {
 
-    private final PasswordEncoder passwordEncoder;
-    private final UserModelMapper userModelMapper;
-    private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final UserModelMapper userModelMapper;
+	private final UserRepository userRepository;
 
-    public UserService(final UserRepository userRepository , final UserModelMapper userModelMapper , final PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.userModelMapper = userModelMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
+	public UserService(final UserRepository userRepository, final UserModelMapper userModelMapper,
+		final PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.userModelMapper = userModelMapper;
+		this.passwordEncoder = passwordEncoder;
+	}
 
-    public UserResponse getUserInfo(final Long userId) {
+	public UserResponse getUserInfo(final Long userId) {
 
-        return userRepository
-                .findById(userId)
-                .map(user -> userModelMapper.toDto(user))
-                .orElseThrow(() -> new NoSuchUserException("존재 하지 않는 유저 입니다."));
+		return userRepository
+			.findById(userId)
+			.map(user -> userModelMapper.toDto(user))
+			.orElseThrow(() -> new NoSuchUserException("존재 하지 않는 유저 입니다."));
 
-    }
+	}
 
-    public UserResponse update(final UserRequest userRequest , final Long userId) {
-        return null;
-    }
+	@Transactional
+	public UserResponse update(final UserUpdateRequest request, final Long userId) {
 
-    public UserResponse register(final UserRequest userRequest) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new NoSuchUserException());
 
-        String encodedPassword = passwordEncoder.encode(userRequest.getPassword());
+		if (!user.matchesPassword(request.getPassword(), passwordEncoder)) {
+			throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
+		}
 
-        User user = new User(
-                userRequest.getEmail(),
-                encodedPassword,
-                userRequest.getNickname(),
-                UserRole.USER
-        );
+		user.updateProfile(request.getNickname());
 
-        userRepository.save(user);
+		return userModelMapper.toDto(user);
 
-        return userModelMapper.toDto(user);
-    }
+	}
+
+	public UserResponse register(final UserRequest userRequest) {
+
+		String encodedPassword = passwordEncoder.encode(userRequest.getPassword());
+
+		User user = new User(
+			userRequest.getEmail(),
+			encodedPassword,
+			userRequest.getNickname(),
+			UserRole.USER
+		);
+
+		userRepository.save(user);
+
+		return userModelMapper.toDto(user);
+	}
 
 }

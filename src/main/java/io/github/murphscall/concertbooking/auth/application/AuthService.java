@@ -1,6 +1,5 @@
 package io.github.murphscall.concertbooking.auth.application;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.github.murphscall.concertbooking.auth.dto.LoginRequest;
@@ -38,6 +37,5 @@ public class AuthService {
 		return token;
 
 	}
-
 
 }

@@ -1,6 +1,5 @@
 package io.github.murphscall.concertbooking.global.config;
 
-
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +14,13 @@ public class FilterConfig {
 	private final JwtProvider jwtProvider;
 	private final PathMatcher pathMatcher;
 
-	public FilterConfig(final JwtProvider jwtProvider, final PathMatcher pathMatcher){
+	public FilterConfig(final JwtProvider jwtProvider, final PathMatcher pathMatcher) {
 		this.jwtProvider = jwtProvider;
 		this.pathMatcher = pathMatcher;
 	}
 
 	@Bean
-	public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilter(){
+	public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilter() {
 		FilterRegistrationBean<JwtAuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
 
 		registrationBean.setFilter(new JwtAuthenticationFilter(jwtProvider, pathMatcher));

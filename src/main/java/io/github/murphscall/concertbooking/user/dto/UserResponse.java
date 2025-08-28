@@ -1,11 +1,11 @@
 package io.github.murphscall.concertbooking.user.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @ToString
 public class UserResponse {
 
-    private Long id;
-    private String email;
-    private String nickname;
-    private LocalDateTime createdAt;
+	private Long id;
+	private String email;
+	private String nickname;
+	private LocalDateTime createdAt;
 
 }

@@ -1,14 +1,21 @@
 package io.github.murphscall.concertbooking.user.domain;
 
-import io.github.murphscall.concertbooking.global.entity.BaseEntity;
-import io.github.murphscall.concertbooking.utils.PasswordEncoder;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.github.murphscall.concertbooking.global.entity.BaseEntity;
+import io.github.murphscall.concertbooking.utils.PasswordEncoder;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 @Getter
 @Table(name = "users")
@@ -66,6 +73,10 @@ public class User extends BaseEntity {
 			throw new IllegalArgumentException("Invalid password");
 			// 추후 커스텀 익셉션으로 변경
 		}
+	}
+
+	public void updateProfile(String nickname) {
+		this.nickname = nickname;
 	}
 
 	public boolean matchesPassword(String raPassword, PasswordEncoder passwordEncoder) {

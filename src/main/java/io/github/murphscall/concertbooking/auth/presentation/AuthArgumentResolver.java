@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 @Component
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
-
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return parameter.getParameterType().equals(AuthUser.class) &&
@@ -24,14 +23,14 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 	}
 
 	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
 		HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
 		Long userId = Optional
-				.ofNullable((Long) request.getAttribute("userId"))
-				.orElseThrow(AuthenticationException::new);
-
+			.ofNullable((Long)request.getAttribute("userId"))
+			.orElseThrow(AuthenticationException::new);
 
 		return new AuthUser(userId);
 	}
