@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 
 import io.github.murphscall.concertbooking.concert.domain.Concert;
@@ -31,7 +33,12 @@ public class ConcertService {
 		return concertModelMapper.toDto(concert);
 	}
 
-	public Page<ConcertResponse> getConcertList(Pageable pageable) {
+	public Page<ConcertResponse> getConcertList(
+		@PageableDefault(
+			size = 10,
+			sort = {"createdAt", "id"},
+			direction = Sort.Direction.DESC
+		) Pageable pageable) {
 
 		Page<Concert> concertPage = concertRepository.findAll(pageable);
 
