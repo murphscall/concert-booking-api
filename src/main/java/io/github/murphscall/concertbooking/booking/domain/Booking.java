@@ -1,8 +1,11 @@
 package io.github.murphscall.concertbooking.booking.domain;
 
+import java.time.LocalDateTime;
+
 import io.github.murphscall.concertbooking.global.entity.BaseEntity;
 import io.github.murphscall.concertbooking.ticket.domain.Ticket;
 import io.github.murphscall.concertbooking.user.domain.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,12 +23,18 @@ public class Booking extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(name = "status", nullable = false)
+	private BookingStatus status;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ticket_id", nullable = false)
+	@JoinColumn(name = "ticket_id", nullable = false, unique = true)
 	private Ticket ticket;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
+
+	@Column(name = "booked_at", nullable = false)
+	private LocalDateTime bookedAt;
 
 }

@@ -20,7 +20,7 @@ public class Concert extends BaseEntity {
 	private Long id;
 
 	@Column(name = "ticket_limit", nullable = false)
-	private Long ticketLimit;
+	private Integer ticketLimit;
 
 	@Column(name = "name", nullable = false)
 	private String name;
