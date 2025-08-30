@@ -10,9 +10,10 @@ public class ConcertMapper implements ConcertModelMapper{
 	@Override
 	public ConcertResponse toDto(Concert entity) {
 		return new ConcertResponse(
-			entity.getName(),
-			entity.getConcertVenue(),
-			entity.getConcertDate()
+				entity.getId(),
+				entity.getName(),
+				entity.getConcertVenue(),
+				entity.getConcertDate()
 		);
 	}
 }

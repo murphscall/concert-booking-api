@@ -27,8 +27,7 @@ public class ConcertService {
 	}
 
 	public ConcertResponse getConcert(final Long concertId) {
-		Concert concert = concertRepository.findById(concertId)
-			.orElseThrow(() -> new NoSuchConcertException());
+		Concert concert = findConcertById(concertId);
 
 		return concertModelMapper.toDto(concert);
 	}
@@ -44,6 +43,22 @@ public class ConcertService {
 
 		return concertPage.map(concertModelMapper::toDto);
 	}
+
+	/**
+	 * [내부용] 다른 서비스 가 Concert 엔티티 자체를 필요로 할 때 호출
+	 * 컨트롤러에서 직접 호출 x
+	 * @return Concert 엔티티
+	 */
+	private Concert findConcertById(final Long concertId) {
+		return concertRepository.findById(concertId)
+				.orElseThrow(() -> new NoSuchConcertException());
+	}
+
+	private boolean exitsById(final Long concertId) {
+		return concertRepository.existsById(concertId);
+	}
+
+
 }
 
 
