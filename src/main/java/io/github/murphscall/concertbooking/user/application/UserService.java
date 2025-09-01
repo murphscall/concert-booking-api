@@ -9,7 +9,6 @@ import io.github.murphscall.concertbooking.user.domain.UserRole;
 import io.github.murphscall.concertbooking.user.dto.UserRequest;
 import io.github.murphscall.concertbooking.user.dto.UserResponse;
 import io.github.murphscall.concertbooking.user.dto.UserUpdateRequest;
-import io.github.murphscall.concertbooking.user.exception.NoSuchUserException;
 import io.github.murphscall.concertbooking.user.mapper.UserModelMapper;
 import io.github.murphscall.concertbooking.utils.PasswordEncoder;
 
@@ -29,18 +28,16 @@ public class UserService {
 
 	public UserResponse getUserInfo(final Long userId) {
 
-		return userRepository
-			.findById(userId)
-			.map(user -> userModelMapper.toDto(user))
-			.orElseThrow(() -> new NoSuchUserException("존재 하지 않는 유저 입니다."));
+		User user = userRepository.findByIdOrThrow(userId);
+
+		return userModelMapper.toDto(user);
 
 	}
 
 	@Transactional
 	public UserResponse update(final UserUpdateRequest request, final Long userId) {
 
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new NoSuchUserException());
+		User user = userRepository.findByIdOrThrow(userId);
 
 		if (!user.matchesPassword(request.getPassword(), passwordEncoder)) {
 			throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
