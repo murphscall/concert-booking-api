@@ -37,6 +37,12 @@ dependencies {
     // 비밀번호 해싱
     implementation 'org.mindrot:jbcrypt:0.4'
 
+    // Spring Data Redis: 스프링에서 Redis를 쉽게 사용하기 위한 기본 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Redisson: 분산 락을 쉽게 구현하게 도와주는 라이브러리
+    implementation 'org.redisson:redisson-spring-boot-starter:3.27.2'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

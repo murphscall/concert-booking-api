@@ -31,7 +31,7 @@ public class BookingController {
 
 		BookingResponse response = bookingService.createBooking(authUser.getId(), bookingRequest);
 
-		String path = "/api/bookings/" + response.getBookingId();
+		String path = "/api/users/me/bookings" + response.getBookingId();
 
 		return ResponseEntity.created(URI.create(path)).body(ApiResponse.success(response, null, HttpStatus.CREATED));
 

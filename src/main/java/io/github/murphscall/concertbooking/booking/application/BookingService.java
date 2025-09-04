@@ -1,6 +1,7 @@
 package io.github.murphscall.concertbooking.booking.application;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.murphscall.concertbooking.booking.domain.Booking;
 import io.github.murphscall.concertbooking.booking.domain.BookingRepository;
@@ -22,21 +23,19 @@ public class BookingService {
 	private final BookingRepository bookingRepository;
 	private final BookingMapper bookingMapper;
 
+	@Transactional
 	public BookingResponse createBooking(final Long userId, final BookingRequest bookingRequest) {
 
 		User user = userRepository.findByIdOrThrow(userId);
-		Ticket ticket = ticketRepository.findByIdOrThrow(bookingRequest.ticketId());
+		Ticket ticket = ticketRepository.findByIdWithConcertOrThrow(bookingRequest.ticketId());
 
 		// 예메 상태 여부 검사 및 변경
 		ticket.book();
 
 		Booking booking = new Booking(user, ticket);
-		bookingRepository.save(booking);
+		Booking saveBooking = bookingRepository.save(booking);
 
-		Booking savedBookingWithDetails = bookingRepository.findByIdWithDetails(booking.getId())
-			.orElseThrow(() -> new IllegalStateException("방금 저장한 예매 내역을 찾을 수 없습니다."));
-
-		return bookingMapper.toDto(savedBookingWithDetails);
+		return bookingMapper.toDto(saveBooking);
 
 	}
 }
