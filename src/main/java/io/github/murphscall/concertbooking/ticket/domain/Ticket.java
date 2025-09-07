@@ -43,7 +43,7 @@ public class Ticket extends BaseEntity {
 	@JoinColumn(name = "concert_id", nullable = false)
 	private Concert concert;
 
-	public void book() {
+	public void checkOrUpdate() {
 		if (this.status == TicketStatus.BOOKED) {
 			throw new IllegalStateException("This ticket is already booked");
 		}

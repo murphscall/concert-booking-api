@@ -30,7 +30,7 @@ public class BookingService {
 		Ticket ticket = ticketRepository.findByIdWithConcertOrThrow(bookingRequest.ticketId());
 
 		// 예메 상태 여부 검사 및 변경
-		ticket.book();
+		ticket.checkOrUpdate();
 
 		Booking booking = new Booking(user, ticket);
 		Booking saveBooking = bookingRepository.save(booking);
