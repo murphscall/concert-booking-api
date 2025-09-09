@@ -1,5 +1,9 @@
 package io.github.murphscall.concertbooking.booking.application;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -7,7 +11,7 @@ import io.github.murphscall.concertbooking.booking.domain.Booking;
 import io.github.murphscall.concertbooking.booking.domain.BookingRepository;
 import io.github.murphscall.concertbooking.booking.dto.BookingRequest;
 import io.github.murphscall.concertbooking.booking.dto.BookingResponse;
-import io.github.murphscall.concertbooking.booking.mapper.BookingMapper;
+import io.github.murphscall.concertbooking.booking.mapper.BookingModelMapper;
 import io.github.murphscall.concertbooking.ticket.domain.Ticket;
 import io.github.murphscall.concertbooking.ticket.domain.TicketRepository;
 import io.github.murphscall.concertbooking.user.domain.User;
@@ -21,7 +25,7 @@ public class BookingService {
 	private final UserRepository userRepository;
 	private final TicketRepository ticketRepository;
 	private final BookingRepository bookingRepository;
-	private final BookingMapper bookingMapper;
+	private final BookingModelMapper bookingModelMapper;
 
 	@Transactional
 	public BookingResponse createBooking(final Long userId, final BookingRequest bookingRequest) {
@@ -35,7 +39,18 @@ public class BookingService {
 		Booking booking = new Booking(user, ticket);
 		Booking saveBooking = bookingRepository.save(booking);
 
-		return bookingMapper.toDto(saveBooking);
+		return bookingModelMapper.toDto(saveBooking);
 
+	}
+
+	public Page<BookingResponse> getBookings(Long userId, @PageableDefault(
+		size = 10,
+		sort = {"createdAt", "id"},
+		direction = Sort.Direction.DESC
+	) Pageable pageable) {
+
+		Page<Booking> pageResponse = bookingRepository.findByUserId(userId, pageable);
+
+		return pageResponse.map(bookingModelMapper::toDto);
 	}
 }

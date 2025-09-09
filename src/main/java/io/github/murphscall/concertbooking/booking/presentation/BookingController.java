@@ -2,8 +2,11 @@ package io.github.murphscall.concertbooking.booking.presentation;
 
 import java.net.URI;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,5 +38,13 @@ public class BookingController {
 
 		return ResponseEntity.created(URI.create(path)).body(ApiResponse.success(response, null, HttpStatus.CREATED));
 
+	}
+
+	@GetMapping("/me")
+	public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookings(@AuthenticationPrincipal AuthUser authUser,
+		Pageable pageable) {
+		Page<BookingResponse> response = bookingService.getBookings(authUser.getId(), pageable);
+
+		return ResponseEntity.ok().body(ApiResponse.success(response, null, HttpStatus.OK));
 	}
 }
