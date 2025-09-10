@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import io.github.murphscall.concertbooking.booking.domain.Booking;
 import io.github.murphscall.concertbooking.booking.dto.BookingResponse;
+import io.github.murphscall.concertbooking.booking.dto.BookingSummaryResponse;
 
 @Component
 public class BookingMapper implements BookingModelMapper {
@@ -18,7 +19,17 @@ public class BookingMapper implements BookingModelMapper {
 			entity.getTicket().getSeatNumber(),
 			entity.getUser().getNickname(),
 			entity.getBookedAt()
-			// Join Fetch 필요 N+1 이슈 발생 할 것
+		);
+	}
+
+	@Override
+	public BookingSummaryResponse toSummaryDto(Booking entity) {
+		return new BookingSummaryResponse(
+			entity.getId(),
+			entity.getTicket().getConcert().getName(),
+			entity.getTicket().getConcert().getConcertDate(),
+			entity.getBookedAt(),
+			entity.getStatus()
 		);
 	}
 

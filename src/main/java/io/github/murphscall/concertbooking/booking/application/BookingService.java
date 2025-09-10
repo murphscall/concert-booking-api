@@ -11,11 +11,13 @@ import io.github.murphscall.concertbooking.booking.domain.Booking;
 import io.github.murphscall.concertbooking.booking.domain.BookingRepository;
 import io.github.murphscall.concertbooking.booking.dto.BookingRequest;
 import io.github.murphscall.concertbooking.booking.dto.BookingResponse;
+import io.github.murphscall.concertbooking.booking.dto.BookingSummaryResponse;
 import io.github.murphscall.concertbooking.booking.mapper.BookingModelMapper;
 import io.github.murphscall.concertbooking.ticket.domain.Ticket;
 import io.github.murphscall.concertbooking.ticket.domain.TicketRepository;
 import io.github.murphscall.concertbooking.user.domain.User;
 import io.github.murphscall.concertbooking.user.domain.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,7 +30,7 @@ public class BookingService {
 	private final BookingModelMapper bookingModelMapper;
 
 	@Transactional
-	public BookingResponse createBooking(final Long userId, final BookingRequest bookingRequest) {
+	public Long createBooking(final Long userId, final BookingRequest bookingRequest) {
 
 		User user = userRepository.findByIdOrThrow(userId);
 		Ticket ticket = ticketRepository.findByIdWithConcertOrThrow(bookingRequest.ticketId());
@@ -39,11 +41,12 @@ public class BookingService {
 		Booking booking = new Booking(user, ticket);
 		Booking saveBooking = bookingRepository.save(booking);
 
-		return bookingModelMapper.toDto(saveBooking);
+		return saveBooking.getId();
 
 	}
 
-	public Page<BookingResponse> getBookings(Long userId, @PageableDefault(
+	@Transactional(readOnly = true)
+	public Page<BookingSummaryResponse> getBookingList(Long userId, @PageableDefault(
 		size = 10,
 		sort = {"createdAt", "id"},
 		direction = Sort.Direction.DESC
@@ -51,6 +54,17 @@ public class BookingService {
 
 		Page<Booking> pageResponse = bookingRepository.findByUserId(userId, pageable);
 
-		return pageResponse.map(bookingModelMapper::toDto);
+		return pageResponse.map(bookingModelMapper::toSummaryDto);
+	}
+
+	@Transactional(readOnly = true)
+	public BookingResponse getBooking(Long userId, Long bookingId) {
+
+		Booking booking = bookingRepository.findById(bookingId)
+			.orElseThrow(() -> new EntityNotFoundException());
+
+		booking.checked(userId);
+
+		return bookingModelMapper.toDto(booking);
 	}
 }

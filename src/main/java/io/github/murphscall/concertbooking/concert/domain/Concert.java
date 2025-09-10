@@ -31,4 +31,14 @@ public class Concert extends BaseEntity {
 	@Column(name = "concert_date", nullable = false)
 	private LocalDateTime concertDate;
 
+	protected Concert() {
+
+	}
+
+	public Concert(Integer ticketLimit, String name, String concertVenue, LocalDateTime concertDate) {
+		this.ticketLimit = ticketLimit;
+		this.name = name;
+		this.concertVenue = concertVenue;
+		this.concertDate = concertDate;
+	}
 }

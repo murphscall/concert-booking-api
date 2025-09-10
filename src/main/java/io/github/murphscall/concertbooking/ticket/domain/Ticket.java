@@ -50,4 +50,15 @@ public class Ticket extends BaseEntity {
 		this.status = TicketStatus.BOOKED;
 	}
 
+	protected Ticket() {
+	}
+
+	public Ticket(Concert concert, String seatNumber, TicketStatus status, TicketGrade grade, BigDecimal price) {
+		this.concert = concert;
+		this.seatNumber = seatNumber;
+		this.status = status;
+		this.grade = grade;
+		this.price = price;
+	}
+
 }
