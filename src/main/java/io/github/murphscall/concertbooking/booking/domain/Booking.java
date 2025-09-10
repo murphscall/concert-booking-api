@@ -51,9 +51,9 @@ public class Booking extends BaseEntity {
 		this.bookedAt = LocalDateTime.now();
 	}
 
-	public void checked(Long userId) {
+	public void validateOwner(Long userId) {
 		if (!this.user.getId().equals(userId)) {
-			throw new IllegalStateException("예매 정보를 조회 할 수 없습니다.");
+			throw new IllegalStateException("해당 예매 정보를 조회 할 수 없습니다.");
 		}
 	}
 }

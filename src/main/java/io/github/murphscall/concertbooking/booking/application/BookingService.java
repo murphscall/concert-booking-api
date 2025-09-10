@@ -60,10 +60,10 @@ public class BookingService {
 	@Transactional(readOnly = true)
 	public BookingResponse getBooking(Long userId, Long bookingId) {
 
-		Booking booking = bookingRepository.findById(bookingId)
+		Booking booking = bookingRepository.findByIdWithDetails(bookingId)
 			.orElseThrow(() -> new EntityNotFoundException());
 
-		booking.checked(userId);
+		booking.validateOwner(userId);
 
 		return bookingModelMapper.toDto(booking);
 	}
