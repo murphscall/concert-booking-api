@@ -1,5 +1,9 @@
 package io.github.murphscall.concertbooking.booking.application;
 
+import java.util.concurrent.TimeUnit;
+
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,20 +32,40 @@ public class BookingService {
 	private final TicketRepository ticketRepository;
 	private final BookingRepository bookingRepository;
 	private final BookingModelMapper bookingModelMapper;
+	private final RedissonClient redissonClient;
 
 	@Transactional
 	public Long createBooking(final Long userId, final BookingRequest bookingRequest) {
 
-		User user = userRepository.findByIdOrThrow(userId);
-		Ticket ticket = ticketRepository.findByIdWithConcertOrThrow(bookingRequest.ticketId());
+		final Long ticketId = bookingRequest.ticketId();
+		final String lockKey = "ticket:" + ticketId;
+		final RLock lock = redissonClient.getLock(lockKey);
 
-		// 예메 상태 여부 검사 및 변경
-		ticket.checkOrUpdate();
+		try {
+			boolean isLocked = lock.tryLock(5, 3, TimeUnit.SECONDS);
 
-		Booking booking = new Booking(user, ticket);
-		Booking saveBooking = bookingRepository.save(booking);
+			if (!isLocked) {
+				throw new IllegalStateException("락 획득 불가");
+			}
+			User user = userRepository.findByIdOrThrow(userId);
+			Ticket ticket = ticketRepository.findByIdWithConcertOrThrow(bookingRequest.ticketId());
 
-		return saveBooking.getId();
+			// 예메 상태 여부 검사 및 변경
+			ticket.checkOrUpdate();
+
+			Booking booking = new Booking(user, ticket);
+			Booking saveBooking = bookingRepository.save(booking);
+
+			return saveBooking.getId();
+
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("락을 획득하는 도중 인터럽트 발생", e);
+		} finally {
+			if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+				lock.unlock();
+			}
+		}
 
 	}
 

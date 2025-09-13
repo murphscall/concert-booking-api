@@ -37,4 +37,11 @@ public class GlobalExceptionHandler {
 
 	}
 
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ApiResponse> handleLoginFailedException(final IllegalStateException ex) {
+		return ResponseEntity
+			.status(HttpStatus.BAD_REQUEST)
+			.body(ApiResponse.error(null, ex.getMessage(), HttpStatus.BAD_REQUEST));
+	}
+
 }
