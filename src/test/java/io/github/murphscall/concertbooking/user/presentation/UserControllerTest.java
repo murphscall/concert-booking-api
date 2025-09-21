@@ -84,7 +84,7 @@ class UserControllerTest {
 			.andExpect(jsonPath("$.data.createdAt").exists());
 	}
 
-	@DisplayName("회원 정보를 가져온다.")
+	@DisplayName("회원 정보 조회 시 200 응답과 정보를 반환 한다.")
 	@Test
 	void userInfo() throws Exception {
 

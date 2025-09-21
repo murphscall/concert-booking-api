@@ -1,0 +1,41 @@
+= Booking API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+
+쿠키 기반 인증 필요
+
+accessToken 이 HttpOnly 쿠키로 포함되어야 합니다.
+
+== 예매 요청
+
+예매를 요청합니다.
+
+=== Request
+
+include::{snippets}/bookings/create/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/bookings/create/http-response.adoc[]
+
+== 예매 내역을 조회합니다.
+
+=== Request
+
+include::{snippets}/bookings/getBookingList/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/bookings/getBookingList/http-response.adoc[]
+
+== 특정 예매를 조회합니다.
+
+=== Request
+
+include::{snippets}/bookings/getBooking/http-response.adoc[]
+
+=== Response
+
+include::{snippets}/bookings/getBooking/http-response.adoc[]
