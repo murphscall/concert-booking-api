@@ -30,6 +30,7 @@ dependencies {
 
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
@@ -57,6 +58,9 @@ dependencies {
 
     // 인메모리 DB
     runtimeOnly 'com.h2database:h2'
+
+    // 마이크로 미터 프로메테우스 구현체
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
     // RDB
     runtimeOnly 'com.mysql:mysql-connector-j'

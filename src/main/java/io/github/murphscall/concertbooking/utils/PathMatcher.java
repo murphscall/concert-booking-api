@@ -12,7 +12,8 @@ public class PathMatcher {
 	private static final List<PermitRequest> PERMIT_REQUESTS = Arrays.asList(
 		new PermitRequest("/api/users", HttpMethod.POST),
 		new PermitRequest("/api/auth/login", HttpMethod.POST),
-		new PermitRequest("/api/concerts", HttpMethod.GET)
+		new PermitRequest("/api/concerts", HttpMethod.GET),
+		new PermitRequest("/actuator/prometheus", HttpMethod.GET)
 	);
 
 	public boolean isPermitted(final String path, final HttpMethod method) {
