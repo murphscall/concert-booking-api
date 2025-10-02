@@ -37,14 +37,10 @@ public class BookingService {
 
 	public Long createBooking(final Long userId, final BookingRequest bookingRequest) {
 
-		log.info("예매 요청 시작");
-
 		final Long ticketId = bookingRequest.ticketId();
 		final String lockKey = "ticket:" + ticketId;
 		final RLock lock = redissonClient.getLock(lockKey);
 		final String cacheKey = TICKET_CACHE_PREFIX + ticketId;
-
-		log.info("캐시 확인");
 
 		String status = redisTemplate.opsForValue().get(cacheKey);
 

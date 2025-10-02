@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import io.github.murphscall.concertbooking.booking.domain.Booking;
 import io.github.murphscall.concertbooking.booking.domain.BookingRepository;
+import io.github.murphscall.concertbooking.global.annotation.LogExecution;
 import io.github.murphscall.concertbooking.ticket.domain.Ticket;
 import io.github.murphscall.concertbooking.ticket.domain.TicketRepository;
 import io.github.murphscall.concertbooking.user.domain.User;
@@ -36,9 +37,8 @@ public class BookingTransactionalService {
 	}
 
 	@Transactional
+	@LogExecution
 	protected Long createBookingTx(final Long userId, final Long ticketId, final String cacheKey, final RLock lock) {
-
-		log.info("락 획득후 예매시작");
 
 		User user = userRepository.findByIdOrThrow(userId);
 		Ticket ticket = ticketRepository.findByIdWithConcertOrThrow(ticketId);
@@ -48,8 +48,6 @@ public class BookingTransactionalService {
 
 		Booking booking = new Booking(user, ticket);
 		Booking saveBooking = bookingRepository.save(booking);
-
-		log.info("락 획득후 예매 완료");
 
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 			@Override
