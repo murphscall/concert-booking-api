@@ -2,6 +2,9 @@ package io.github.murphscall.concertbooking.booking.application;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,9 +13,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import io.github.murphscall.concertbooking.booking.domain.Booking;
 import io.github.murphscall.concertbooking.booking.domain.BookingRepository;
 import io.github.murphscall.concertbooking.booking.dto.BookingRequest;
 
@@ -24,6 +30,8 @@ public class BookingServiceConcurrencyTest {
 
 	@Autowired
 	private BookingRepository bookingRepository;
+
+	private static final Logger log = LoggerFactory.getLogger(BookingServiceConcurrencyTest.class);
 
 	@BeforeEach
 	void setUp() {
@@ -93,5 +101,60 @@ public class BookingServiceConcurrencyTest {
 		// 최종적으로 bookings 테이블에 저장된 예약 건수 확인
 		long bookingCount = bookingRepository.count();
 		assertThat(bookingCount).as("데이터베이스에는 예약이 단 한 건만 저장되어야 한다.").isEqualTo(1L);
+	}
+
+	@Test
+	@DisplayName("동시에 같은 티켓 예약 시도 - 하나만 성공해야 한다")
+	void testConcurrentBooking() throws InterruptedException {
+		Long ticketId = 1L;
+		int threadsCount = 10;
+		ExecutorService executorService = Executors.newFixedThreadPool(threadsCount);
+		CountDownLatch latch = new CountDownLatch(threadsCount);
+
+		AtomicInteger successCount = new AtomicInteger(0);
+		AtomicInteger failCount = new AtomicInteger(0);
+		List<Long> timestamps = Collections.synchronizedList(new ArrayList<>());
+
+		for (int i = 0; i < threadsCount; i++) {
+			final long userId = i + 1;
+			executorService.submit(() -> {
+				try {
+					long startTime = System.currentTimeMillis();
+					BookingRequest request = new BookingRequest(ticketId);
+
+					bookingService.createBooking(userId, request);
+
+					long endTime = System.currentTimeMillis();
+					timestamps.add(endTime - startTime);
+
+					successCount.incrementAndGet();
+					log.info("✅ 성공 - User: {}, 소요시간: {}ms", userId, endTime - startTime);
+
+				} catch (Exception e) {
+					failCount.incrementAndGet();
+					log.info("❌ 실패 - User: {}, 이유: {}", userId, e.getMessage());
+				} finally {
+					latch.countDown();
+				}
+			});
+		}
+
+		latch.await();
+		executorService.shutdown();
+
+		// Then
+		log.info("=== 테스트 결과 ===");
+		log.info("성공: {}건", successCount.get());
+		log.info("실패: {}건", failCount.get());
+		log.info("평균 소요시간: {}ms", timestamps.stream().mapToLong(Long::longValue).average().orElse(0));
+
+		// 실제 DB 확인
+		List<Booking> bookings = bookingRepository.findAll();
+		log.info("실제 생성된 예약: {}건", bookings.size());
+
+		assertThat(successCount.get()).isEqualTo(1);  // 딱 1개만 성공
+		assertThat(failCount.get()).isEqualTo(threadsCount - 1);  // 나머지는 실패
+		assertThat(bookings).hasSize(1);  // DB에도 1개만 존재
+
 	}
 }

@@ -12,6 +12,7 @@ import io.github.murphscall.concertbooking.global.annotation.LogExecution;
 @Aspect
 @Component
 public class LoggingAspect {
+
 	private static final Logger log = LoggerFactory.getLogger(LoggingAspect.class);
 
 	@Around("@annotation(logExecution)")

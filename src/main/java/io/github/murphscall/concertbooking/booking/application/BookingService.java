@@ -2,14 +2,9 @@ package io.github.murphscall.concertbooking.booking.application;
 
 import java.util.concurrent.TimeUnit;
 
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,48 +15,41 @@ import io.github.murphscall.concertbooking.booking.dto.BookingRequest;
 import io.github.murphscall.concertbooking.booking.dto.BookingResponse;
 import io.github.murphscall.concertbooking.booking.dto.BookingSummaryResponse;
 import io.github.murphscall.concertbooking.booking.mapper.BookingModelMapper;
+import io.github.murphscall.concertbooking.global.annotation.DistributedLock;
+import io.github.murphscall.concertbooking.ticket.domain.Ticket;
+import io.github.murphscall.concertbooking.ticket.domain.TicketRepository;
+import io.github.murphscall.concertbooking.user.domain.User;
+import io.github.murphscall.concertbooking.user.domain.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class BookingService {
-	private static final Logger log = LoggerFactory.getLogger(BookingService.class);
 
-	private final BookingTransactionalService bookingTransactionalService;
 	private final BookingRepository bookingRepository;
 	private final BookingModelMapper bookingModelMapper;
-	private final RedissonClient redissonClient;
-	private final StringRedisTemplate redisTemplate;
-	private static final String TICKET_CACHE_PREFIX = "ticket-status:";
+	private final UserRepository userRepository;
+	private final TicketRepository ticketRepository;
 
+	@DistributedLock(
+		key = "'ticket:' + #bookingRequest.ticketId()",
+		waitTime = 0,
+		leaseTime = 10,
+		timeUnit = TimeUnit.SECONDS
+	)
 	public Long createBooking(final Long userId, final BookingRequest bookingRequest) {
 
-		final Long ticketId = bookingRequest.ticketId();
-		final String lockKey = "ticket:" + ticketId;
-		final RLock lock = redissonClient.getLock(lockKey);
-		final String cacheKey = TICKET_CACHE_PREFIX + ticketId;
+		User user = userRepository.findByIdOrThrow(userId);
+		Ticket ticket = ticketRepository.findByIdWithConcertOrThrow(bookingRequest.ticketId());
 
-		String status = redisTemplate.opsForValue().get(cacheKey);
+		// DB 유니크/상태 체크
+		ticket.checkOrUpdate();
 
-		if ("BOOKED".equals(status)) {
-			log.warn("이미 예약된 티켓입니다.");
-			throw new IllegalStateException("이미 예약된 티켓");
-		}
+		Booking booking = new Booking(user, ticket);
+		Booking saveBooking = bookingRepository.save(booking);
 
-		try {
-			log.info("락 획득 시작");
-			boolean isLocked = lock.tryLock(0, 3, TimeUnit.SECONDS);
-			if (!isLocked) {
-				log.warn("락 획득 불가");
-				throw new IllegalStateException("락 획득 불가");
-			}
-			log.info("락 획득 성공");
-			return bookingTransactionalService.createBookingTx(userId, ticketId, cacheKey, lock);
-
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+		return saveBooking.getId();
 	}
 
 	@Transactional(readOnly = true)
